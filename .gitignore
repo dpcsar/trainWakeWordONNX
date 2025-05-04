@@ -1,0 +1,7 @@
+# Ignore everything
+*
+
+# Allow (negate the ignore) the three specific files
+!.gitignore
+!train_wake_word.py
+!train_wake_word.setup.sh
