@@ -17,20 +17,14 @@ This script trains a custom wake word model for [OpenWakeWord](https://github.co
     bash train_wake_word.setup.sh
     ```
 
-3.  **Activate the virtual environment:**
-
-    ```bash
-    source venv/bin/activate
-    ```
-
-4.  **Edit the variables:**
+3.  **Edit the variables:**
 
     Modify the variables at the top of the [`train_wake_word.py`](train_wake_word.py) file to configure the training process.
 
-3.  **Run the training script:**
+4.  **Run the training script:**
 
     ```bash
-    python train_wake_word.py
+    bash train_wake_word.run.sh
     ```
 
 ## Configuration
@@ -57,31 +51,5 @@ The script has the following dependencies:
 
 *   Python 3.10
 
-These dependencies are installed by the [`train_wake_word.setup.sh`](train_wake_word.setup.sh) script.
-
-*   TensorFlow (CPU or GPU)
-*   torch<=2.7
-*   torchvision
-*   torchaudio
-*   webrtcvad
-*   protobuf==3.20.3
-*   numpy==1.26.4
-*   mutagen==1.47.0
-*   torchinfo==1.8.0
-*   torchmetrics==1.2.0
-*   speechbrain==0.5.14
-*   audiomentations==0.33.0
-*   torch-audiomentations==0.11.0
-*   acoustics==0.2.6
-*   onnx\_tf==1.10.0
-*   onnx2tf
-*   onnx
-*   ai\_edge\_litert==1.2.0
-*   onnx\_graphsurgeon
-*   sng4onnx
-*   pronouncing==0.2.0
-*   datasets==2.14.6
-*   deep-phonemizer==0.0.19
-*   piper-phonemize==1.1.0
-*   tensorflow\_probability==0.16.0
-*   PyYAML
+Additional requirements are listed in:
+*   requirements.txt

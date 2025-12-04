@@ -12,9 +12,10 @@ python3.10 -m venv venv
 source venv/bin/activate
 curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
 python get-pip.py
+python3.10 -m pip install -r requirements.txt
 """
 # Use tensorflow cpu?
-tf_cpu = True
+tf_cpu = True 
 # Define wake word parameters
 target_words = ['jarvis', 'hey_jarvis']  # Variants
 model_name = 'jarvis'
@@ -61,6 +62,8 @@ def setup_environment():
     if not os.path.exists("./piper-sample-generator"):
         print("Cloning piper-sample-generator...")
         subprocess.run('git clone https://github.com/rhasspy/piper-sample-generator', shell=True)
+        # need specific commit and resampler
+        subprocess.run('cd piper-sample-generator; git checkout 213d4d5 -b commit-213d4d5; sed -i "s/sinc_interp_kaiser/kaiser_window/g" generate_samples.py', shell=True)
         subprocess.run("wget -O piper-sample-generator/models/en_US-libritts_r-medium.pt 'https://github.com/rhasspy/piper-sample-generator/releases/download/v2.0.0/en_US-libritts_r-medium.pt'", shell=True)
         #aternative subprocess.run("wget -O piper-sample-generator/models/en_US-libritts_r-medium.pt 'https://github.com/dscripka/openWakeWord/releases/download/v0.5.1/en_US-libritts_r-medium.pt'", shell=True)
         
@@ -68,7 +71,7 @@ def setup_environment():
         print("Modifying generate_samples.py to use weights_only=False...")
         with open("./piper-sample-generator/generate_samples.py", "r") as f:
             content = f.read()
-        
+ 
         if "torch.load(model_path)" in content:
             modified = content.replace("torch.load(model_path)", "torch.load(model_path, weights_only=False)")
             with open("./piper-sample-generator/generate_samples.py", "w") as f:
@@ -77,20 +80,6 @@ def setup_environment():
         else:
             print("Could not find weights_only parameter in generate_samples.py")
         
-    # Install basic dependencies
-    print("Installing basic dependencies...")
-    dependencies = [
-        # TODO: -fix? needed? 'pip install piper-phonemizer',
-        'pip install "torch<=2.7"',
-        'pip install "torchvision"',
-        'pip install "torchaudio"',
-        'pip install webrtcvad',
-        'pip install "protobuf==3.20.3"',
-        'pip install "numpy==1.26.4"',
-    ]
-    for package in dependencies:
-        subprocess.run(package, shell=True)
- 
     # Clone openwakeword if needed
     if not os.path.exists("./openwakeword"):
         print("Cloning openwakeword...")
@@ -102,31 +91,6 @@ def setup_environment():
     # Add to path
     if "piper-sample-generator/" not in sys.path:
         sys.path.append("piper-sample-generator/")
-
-    # Install additional dependencies
-    print("Installing additional dependencies...")
-    dependencies = [
-        'pip install "mutagen==1.47.0"',
-        'pip install "torchinfo==1.8.0"',
-        'pip install "torchmetrics==1.2.0"',
-        'pip install "speechbrain==0.5.14"',
-        'pip install "audiomentations==0.33.0"',
-        'pip install "torch-audiomentations==0.11.0"',
-        'pip install "acoustics==0.2.6"',
-        'pip install "onnx_tf==1.10.0"',
-        'pip install "onnx2tf"',
-        'pip install "onnx"',
-        'pip install "ai_edge_litert==1.2.0"',
-        'pip install "onnx_graphsurgeon"',
-        'pip install "sng4onnx"',
-        'pip install "pronouncing==0.2.0"',
-        'pip install "datasets==2.14.6"',
-        'pip install "deep-phonemizer==0.0.19"',
-        'pip install "piper-phonemize==1.1.0"',
-        'pip install "tensorflow_probability==0.16.0"',
-    ]
-    for package in dependencies:
-        subprocess.run(package, shell=True)
 
     # Install TensorFlow CPU or GPU
     print("Installing TensorFlow CPU...")
@@ -147,7 +111,7 @@ def setup_environment():
 def test_tts(target_words):
     """Generate test TTS samples for all target wake words."""
     from generate_samples import generate_samples # type: ignore
-    
+ 
     # Handle both single string and list inputs
     if isinstance(target_words, str):
         target_words = [target_words]
@@ -161,6 +125,7 @@ def test_tts(target_words):
         
         generate_samples(
             text=word,
+            model="piper-sample-generator/models/en_US-libritts_r-medium.pt",
             max_samples=1,
             length_scales=[1.1],
             noise_scales=[0.7], 
@@ -194,7 +159,7 @@ def test_tts(target_words):
                 index = int(choice) - 1
                 if 0 <= index < len(sample_files):
                     print(f"Playing {sample_files[index]}...")
-                    subprocess.run(f'aplay {sample_files[index]}', shell=True)
+                    subprocess.run(f'mplayer {sample_files[index]}', shell=True)
                 else:
                     print("Invalid selection")
             except ValueError:

@@ -3,5 +3,7 @@
 
 # Allow (negate the ignore) the three specific files
 !.gitignore
+!requirements.txt
 !train_wake_word.py
+!train_wake_word.run.sh
 !train_wake_word.setup.sh
