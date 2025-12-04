@@ -87,6 +87,8 @@ def setup_environment():
         subprocess.run('pip install -e ./openwakeword', shell=True)
     # Clean the repository
     # subprocess.run('cd ./openwakeword && git clean -xdff', shell=True)
+    # Install openwakeword
+    subprocess.run('pip install -e ./openwakeword', shell=True)
 
     # Add to path
     if "piper-sample-generator/" not in sys.path:
